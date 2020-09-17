@@ -6,7 +6,7 @@ use App\Services\TextMessageSender;
 use Mockery;
 use Tests\TestCase;
 
-class OrderConfirmationMessageControllerTest extends TestCase
+class TextMessageControllerTest extends TestCase
 {
     /**
      * @test
