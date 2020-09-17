@@ -30,6 +30,29 @@ class TextMessageControllerTest extends TestCase
     /**
      * @test
      */
+    public function testSendOrderConfirmationWithInvalidParams(): void
+    {
+        $response = $this->postJson(route('text-messages.send-order-confirmation'), [
+            'restaurant_name' => null,
+            'delivery_time'   => null,
+            'phone_number'    => null,
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonStructure([
+            'message',
+            'errors' => [
+                'restaurant_name',
+                'delivery_time',
+                'phone_number',
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
     public function testLatest(): void
     {
         TextMessage::factory()->count(60)->create();
