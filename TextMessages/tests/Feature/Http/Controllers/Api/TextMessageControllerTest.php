@@ -12,13 +12,13 @@ class TextMessageControllerTest extends TestCase
     /**
      * @test
      */
-    public function testSend(): void
+    public function testSendOrderConfirmation(): void
     {
         $this->instance(TextMessageSender::class, Mockery::mock(TextMessageSender::class, function (Mockery\MockInterface $mock) {
             $mock->shouldReceive('send')->once();
         }));
 
-        $response = $this->post(route('text-messages.send-order-confirmation'), [
+        $response = $this->postJson(route('text-messages.send-order-confirmation'), [
             'restaurant_name' => 'Text restaurant',
             'delivery_time'   => '2020-09-23 09:36',
             'phone_number'    => 'test_number_name',
@@ -57,7 +57,7 @@ class TextMessageControllerTest extends TestCase
     {
         TextMessage::factory()->count(60)->create();
 
-        $response = $this->get(route('text-messages.latest', ['limit' => 50]));
+        $response = $this->getJson(route('text-messages.latest', ['limit' => 50]));
 
         $response->assertStatus(200);
         $response->assertJsonCount(50);
