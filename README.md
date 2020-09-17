@@ -10,19 +10,36 @@ Containers are managed with docker-compose
 
 In case you don't have it, you can find setup instructions for your OS distribution here: https://docs.docker.com/compose/install/
 
+Make sure port `3306` is free
+
 Run a local container using 
 
 `$ docker-compose up --build -d`
 
 ### Laravel
 
-You have to create `.env` file, based on `.env.example`
+Create `.env` file, based on `.env.example`
+
+Open console 
+
+`$ docker-compose exec text_messages bash`
+
+Install dependencies 
+
+`$ composer install`
 
 Generate application key
 
-`$ docker-compose exec text_messages php artisan key:generate`
+`$ php artisan key:generate`
 
-Create cache file of configs 
+Regenerate cache 
 
-`$ docker-compose exec text_messages php artisan config:cache`
+`$ php artisan config:cache`
+
+
+### Testing 
+
+Create `test.sqlite` file in `TextMessages` directory
+
+Run `$ php artisan test` to be sure everything is working correctly
 
