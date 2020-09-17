@@ -45,7 +45,7 @@ class TextMessageController extends Controller
 
         $this->textMessageSender->send($textMessage);
 
-        return response()->json();
+        return response()->json([], Response::HTTP_NO_CONTENT);
     }
 
     public function latest(LatestTextMessages $request): Response

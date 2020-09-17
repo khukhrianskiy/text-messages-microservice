@@ -24,7 +24,7 @@ class TextMessageControllerTest extends TestCase
             'phone_number'    => 'test_number_name',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(204);
     }
 
     /**
