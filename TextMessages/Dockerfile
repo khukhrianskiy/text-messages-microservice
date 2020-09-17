@@ -4,8 +4,8 @@ WORKDIR /var/www
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libzip-dev git zip unzip && \
-    pecl install xdebug-2.9.7 && \
-    docker-php-ext-enable xdebug && \
+    pecl install xdebug-2.9.2 apcu && \
+    docker-php-ext-enable xdebug apcu && \
     docker-php-ext-install pdo pdo_mysql
 
 RUN apt-get clean
