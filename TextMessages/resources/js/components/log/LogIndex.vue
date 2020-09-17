@@ -43,7 +43,7 @@
         },
         mounted() {
             axios
-                .get('/api/text-messages/latest?limit=ololo')
+                .get('/api/text-messages/latest?limit=50')
                 .then(response => (this.textMessages = response.data));
             axios
                 .get('/api/text-messages/failed')

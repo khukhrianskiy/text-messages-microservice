@@ -1953,7 +1953,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/text-messages/latest?limit=ololo').then(function (response) {
+    axios.get('/api/text-messages/latest?limit=50').then(function (response) {
       return _this.textMessages = response.data;
     });
     axios.get('/api/text-messages/failed').then(function (response) {
