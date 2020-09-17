@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Builders\TextMessageDirector;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LatestTextMessages;
 use App\Http\Requests\SendOrderConfirmationMessage;
+use App\Repositories\TextMessageRepositoryInterface;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TextMessageController extends Controller
@@ -18,14 +19,18 @@ class TextMessageController extends Controller
 
     private TextMessagePersister $textMessagePersister;
 
+    private TextMessageRepositoryInterface $textMessageRepository;
+
     public function __construct(
         TextMessageDirector $textMessageDirector,
         TextMessageSender $textMessageSender,
-        TextMessagePersister $textMessagePersister
+        TextMessagePersister $textMessagePersister,
+        TextMessageRepositoryInterface $textMessageRepository
     ) {
-        $this->textMessageDirector  = $textMessageDirector;
-        $this->textMessageSender    = $textMessageSender;
-        $this->textMessagePersister = $textMessagePersister;
+        $this->textMessageDirector   = $textMessageDirector;
+        $this->textMessageSender     = $textMessageSender;
+        $this->textMessagePersister  = $textMessagePersister;
+        $this->textMessageRepository = $textMessageRepository;
     }
 
     public function sendOrderConfirmation(SendOrderConfirmationMessage $request): Response
@@ -41,5 +46,19 @@ class TextMessageController extends Controller
         $this->textMessageSender->send($textMessage);
 
         return response()->json();
+    }
+
+    public function latest(LatestTextMessages $request): Response
+    {
+        $textMessages = $this->textMessageRepository->getLatest($request->get('limit'));
+
+        return response()->json($textMessages);
+    }
+
+    public function failed(): Response
+    {
+        $textMessages = $this->textMessageRepository->getTodaysFailed();
+
+        return response()->json($textMessages);
     }
 }

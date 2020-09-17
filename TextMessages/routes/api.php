@@ -20,4 +20,10 @@ Route::name('text-messages.')
 
     Route::post('/send-order-confirmation', [TextMessageController::class, 'sendOrderConfirmation'])
         ->name('send-order-confirmation');
+
+    Route::get('latest', [TextMessageController::class, 'latest'])
+        ->name('latest');
+
+    Route::get('failed', [TextMessageController::class, 'failed'])
+        ->name('failed');
 });

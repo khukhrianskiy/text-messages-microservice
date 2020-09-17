@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Factories\SendMessageFactory;
+use App\Repositories\TextMessageRepository;
+use App\Repositories\TextMessageRepositoryInterface;
 use App\Services\Clients\MessageBirdClient;
 use App\Services\Clients\TextMessageClientInterface;
 use Illuminate\Contracts\Foundation\Application;
@@ -12,7 +14,8 @@ use MessageBird\Client;
 class AppServiceProvider extends ServiceProvider
 {
     public array $bindings = [
-        TextMessageClientInterface::class => MessageBirdClient::class,
+        TextMessageClientInterface::class     => MessageBirdClient::class,
+        TextMessageRepositoryInterface::class => TextMessageRepository::class,
     ];
 
     public function register(): void

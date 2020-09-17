@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::name('log.')
+    ->prefix('/log')
+    ->group(function () {
+
+    Route::get('', [LogController::class, 'index'])->name('index');
 });
