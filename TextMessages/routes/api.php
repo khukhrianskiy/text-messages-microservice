@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\OrderConfirmationMessageController;
+use App\Http\Controllers\Api\TextMessageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::name('order-confirmation-message.')
-    ->prefix('/order-confirmation-message')
+Route::name('text-messages.')
+    ->prefix('/text-messages')
     ->group(function () {
 
-    Route::post('/send', [OrderConfirmationMessageController::class, 'send'])
-        ->name('send');
+    Route::post('/send-order-confirmation', [TextMessageController::class, 'sendOrderConfirmation'])
+        ->name('send-order-confirmation');
 });

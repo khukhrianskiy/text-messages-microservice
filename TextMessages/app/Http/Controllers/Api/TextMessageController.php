@@ -7,9 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SendOrderConfirmationMessage;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class OrderConfirmationMessageController extends Controller
+class TextMessageController extends Controller
 {
     private TextMessageDirector $textMessageDirector;
 
@@ -27,7 +28,7 @@ class OrderConfirmationMessageController extends Controller
         $this->textMessagePersister = $textMessagePersister;
     }
 
-    public function send(SendOrderConfirmationMessage $request): Response
+    public function sendOrderConfirmation(SendOrderConfirmationMessage $request): Response
     {
         $textMessage = $this->textMessageDirector->buildOrderConfirmationMessage(
                 $request->get('restaurant_name'),

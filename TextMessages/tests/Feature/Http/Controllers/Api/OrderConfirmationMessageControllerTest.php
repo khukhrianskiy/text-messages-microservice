@@ -17,7 +17,7 @@ class OrderConfirmationMessageControllerTest extends TestCase
             $mock->shouldReceive('send')->once();
         }));
 
-        $response = $this->post(route('order-confirmation-message.send'), [
+        $response = $this->post(route('text-messages.send-order-confirmation'), [
             'restaurant_name' => 'Text restaurant',
             'delivery_time'   => '2020-09-23 09:36',
             'phone_number'    => 'test_number_name',
