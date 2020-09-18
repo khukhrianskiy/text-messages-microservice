@@ -6,6 +6,8 @@ use App\Builders\TextMessageDirector;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LatestTextMessages;
 use App\Http\Requests\SendOrderConfirmationMessage;
+use App\Jobs\SendDeliveredTextMessage;
+use App\Models\TextMessage;
 use App\Repositories\TextMessageRepositoryInterface;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
@@ -44,6 +46,9 @@ class TextMessageController extends Controller
         $this->textMessagePersister->save($textMessage);
 
         $this->textMessageSender->send($textMessage);
+
+        SendDeliveredTextMessage::dispatch($textMessage->phone_number)
+            ->delay(now()->addMinutes(TextMessage::DELIVERED_MESSAGE_DELAY_MINUTES));
 
         return response()->json([], Response::HTTP_NO_CONTENT);
     }

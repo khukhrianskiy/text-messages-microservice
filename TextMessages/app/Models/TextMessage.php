@@ -19,6 +19,8 @@ class TextMessage extends Model
 
     public const STATUS_DELIVERED = 'delivered';
 
+    public const DELIVERED_MESSAGE_DELAY_MINUTES = 90;
+
     /**
      * @var string[]
      */

@@ -26,6 +26,16 @@ class TextMessageDirector
         return $this;
     }
 
+    public function buildOrderDeliveredMessage(string $phoneNumber): self
+    {
+        $this->setBuilder(new OrderDeliveredMessageBuilder());
+
+        $this->builder->setPhoneNumber($phoneNumber);
+        $this->builder->buildBody();
+
+        return $this;
+    }
+
     public function get(): TextMessage
     {
         return $this->builder->get();

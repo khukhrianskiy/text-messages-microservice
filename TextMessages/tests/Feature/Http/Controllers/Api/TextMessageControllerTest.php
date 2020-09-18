@@ -15,7 +15,7 @@ class TextMessageControllerTest extends TestCase
     public function testSendOrderConfirmation(): void
     {
         $this->instance(TextMessageSender::class, Mockery::mock(TextMessageSender::class, function (Mockery\MockInterface $mock) {
-            $mock->shouldReceive('send')->once();
+            $mock->shouldReceive('send')->twice();
         }));
 
         $response = $this->postJson(route('text-messages.send-order-confirmation'), [
