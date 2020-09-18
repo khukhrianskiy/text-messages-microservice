@@ -35,6 +35,7 @@ services:
     environment:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+      MYSQL_ROOT_PASSWORD: "root_password"
     volumes:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
