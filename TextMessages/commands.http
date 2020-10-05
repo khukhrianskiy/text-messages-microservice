@@ -1,0 +1,18 @@
+GET http://127.0.0.1/api/text-messages/failed
+Accept: application/json
+
+###
+GET http://127.0.0.1/api/text-messages/latest
+Accept: application/json
+
+###
+POST http://127.0.0.1/api/text-messages/send-order-confirmation
+Content-Type: application/json
+
+{
+    "restaurant_name": "test",
+    "delivery_time": "2020-09-23 09:36",
+    "phone_number": "test"
+}
+
+###
