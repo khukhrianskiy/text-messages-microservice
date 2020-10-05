@@ -6,9 +6,8 @@ use App\Factories\OrderConfirmationMessageDtoFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LatestTextMessages;
 use App\Http\Requests\SendOrderConfirmationMessage;
-use App\Jobs\SendDeliveredTextMessage;
-use App\Models\TextMessage;
 use App\Repositories\TextMessageRepositoryInterface;
+use App\Services\Dispatchers;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,16 +22,20 @@ class TextMessageController extends Controller
 
     private OrderConfirmationMessageDtoFactory $orderConfirmationMessageDtoFactory;
 
+    private Dispatchers $dispatchers;
+
     public function __construct(
         TextMessageSender $textMessageSender,
         TextMessagePersister $textMessagePersister,
         TextMessageRepositoryInterface $textMessageRepository,
-        OrderConfirmationMessageDtoFactory $orderConfirmationMessageDtoFactory
+        OrderConfirmationMessageDtoFactory $orderConfirmationMessageDtoFactory,
+        Dispatchers $dispatchers
     ) {
         $this->textMessageSender                  = $textMessageSender;
         $this->textMessagePersister               = $textMessagePersister;
         $this->textMessageRepository              = $textMessageRepository;
         $this->orderConfirmationMessageDtoFactory = $orderConfirmationMessageDtoFactory;
+        $this->dispatchers                        = $dispatchers;
     }
 
     public function sendOrderConfirmation(SendOrderConfirmationMessage $request): Response
@@ -45,8 +48,7 @@ class TextMessageController extends Controller
 
         $this->textMessagePersister->saveFromDto($textMessageDto);
 
-        SendDeliveredTextMessage::dispatch($textMessageDto->getPhoneNumber())
-            ->delay(now()->addMinutes(TextMessage::DELIVERED_MESSAGE_DELAY_MINUTES));
+        $this->dispatchers->afterSendDeliveredTextMessage($textMessageDto);
 
         return response()->json([], Response::HTTP_NO_CONTENT);
     }
