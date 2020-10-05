@@ -6,6 +6,8 @@ use App\Dto\TextMessageDto;
 
 class OrderConfirmationMessageDtoFactory
 {
+    private const SUBJECT = 'Order Confirmation Message';
+
     public function create(array $request): TextMessageDto
     {
         $message = view('text-messages.order-confirmation-message', [
@@ -13,6 +15,6 @@ class OrderConfirmationMessageDtoFactory
             'delivery_time'   => $request['delivery_time'],
         ]);
 
-        return new TextMessageDto($message, $request['phone_number']);
+        return new TextMessageDto($message, $request['phone_number'], self::SUBJECT);
     }
 }

@@ -18,7 +18,7 @@ class SendDeliveredTextMessageTest extends TestCase
     {
         $phoneNumber = 'text_phone_number';
 
-        $textMessage = new TextMessageDto('message', $phoneNumber);
+        $textMessage = new TextMessageDto('message', $phoneNumber, 'SUBJECT');
 
         $orderDeliveredMessageDtoFactoryMock = $this->createMock(OrderDeliveredMessageDtoFactory::class);
         $orderDeliveredMessageDtoFactoryMock

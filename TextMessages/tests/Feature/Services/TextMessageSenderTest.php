@@ -20,7 +20,7 @@ class TextMessageSenderTest extends TestCase
         /** @var TextMessage $textMessage */
         $textMessage = TextMessage::factory()->create();
 
-        $textMessageDto = new TextMessageDto($textMessage->body, $textMessage->phone_number);
+        $textMessageDto = new TextMessageDto($textMessage->body, $textMessage->phone_number, 'SUBJECT');
 
         $this->assertSame(TextMessage::STATUS_NEW, $textMessage->status);
 

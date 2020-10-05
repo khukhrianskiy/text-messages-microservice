@@ -10,10 +10,13 @@ class TextMessageDto
 
     private string $status;
 
-    public function __construct(string $message, string $phoneNumber)
+    private string $subject;
+
+    public function __construct(string $message, string $phoneNumber, string $subject)
     {
         $this->message     = $message;
         $this->phoneNumber = $phoneNumber;
+        $this->subject     = $subject;
     }
 
     public function getMessage(): string
@@ -36,5 +39,10 @@ class TextMessageDto
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getSubject(): string
+    {
+        return $this->subject;
     }
 }

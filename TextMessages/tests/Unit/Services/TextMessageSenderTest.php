@@ -21,7 +21,7 @@ class TextMessageSenderTest extends TestCase
 
         $textMessageResponse = new TextMessageResponse('accepted');
 
-        $textMessage = new TextMessageDto('message', 'phone number');
+        $textMessage = new TextMessageDto('message', 'phone number', 'SUBJECT');
 
         /** @var MockObject|TextMessageClientInterface $textMessageClientMock */
         $textMessageClientMock = $this->createMock(TextMessageClientInterface::class);

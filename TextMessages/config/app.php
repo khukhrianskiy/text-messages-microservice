@@ -123,6 +123,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'sender' => env('SENDER', 'MessageBirdClient'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
