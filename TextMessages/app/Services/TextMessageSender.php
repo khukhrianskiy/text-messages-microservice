@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Events\TextMessageStatusUpdate;
-use App\Models\TextMessage;
+use App\Dto\TextMessageDto;
 use App\Services\Clients\TextMessageClientInterface;
 
 class TextMessageSender
@@ -15,10 +14,10 @@ class TextMessageSender
         $this->textMessageClient = $textMessageClient;
     }
 
-    public function send(TextMessage $textMessage): void
+    public function send(TextMessageDto $textMessageDto): string
     {
-        $response = $this->textMessageClient->sendMessage($textMessage);
+        $response = $this->textMessageClient->sendMessage($textMessageDto);
 
-        event(new TextMessageStatusUpdate($textMessage, $response->getStatus()));
+        return $response->getStatus();
     }
 }

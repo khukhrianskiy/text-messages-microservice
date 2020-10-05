@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Builders\TextMessageDirector;
+use App\Factories\OrderDeliveredMessageDtoFactory;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
 use Illuminate\Bus\Queueable;
@@ -23,15 +23,17 @@ class SendDeliveredTextMessage implements ShouldQueue
     }
 
     public function handle(
-        TextMessageDirector $textMessageDirector,
+        OrderDeliveredMessageDtoFactory $orderDeliveredMessageDtoFactory,
         TextMessageSender $textMessageSender,
         TextMessagePersister $textMessagePersister
     ): void {
-        $textMessage = $textMessageDirector
-            ->buildOrderDeliveredMessage($this->phoneNumber)
-            ->get();
+        $textMessageDto = $orderDeliveredMessageDtoFactory
+            ->create($this->phoneNumber);
 
-        $textMessagePersister->save($textMessage);
-        $textMessageSender->send($textMessage);
+        $status = $textMessageSender->send($textMessageDto);
+
+        $textMessageDto->setStatus($status);
+
+        $textMessagePersister->saveFromDto($textMessageDto);
     }
 }

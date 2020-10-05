@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Services;
 
+use App\Dto\TextMessageDto;
 use App\Models\TextMessage;
 use App\Services\Clients\TextMessageClientInterface;
 use App\Services\Clients\TextMessageResponse;
@@ -19,6 +20,8 @@ class TextMessageSenderTest extends TestCase
         /** @var TextMessage $textMessage */
         $textMessage = TextMessage::factory()->create();
 
+        $textMessageDto = new TextMessageDto($textMessage->body, $textMessage->phone_number);
+
         $this->assertSame(TextMessage::STATUS_NEW, $textMessage->status);
 
         $testMessageResponse = new TextMessageResponse('error');
@@ -28,16 +31,16 @@ class TextMessageSenderTest extends TestCase
         $textMessageClientMock
             ->expects(self::once())
             ->method('sendMessage')
-            ->with($textMessage)
+            ->with($textMessageDto)
             ->willReturn($testMessageResponse);
 
         $textMessageSender = new TextMessageSender($textMessageClientMock);
 
-        $textMessageSender->send($textMessage);
+        $textMessageSender->send($textMessageDto);
 
         $this->assertDatabaseHas('text_messages', [
             'id'     => $textMessage->id,
-            'status' => 'error',
+            'status' => 'new',
         ]);
     }
 }

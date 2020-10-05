@@ -2,9 +2,9 @@
 
 namespace App\Services\Clients;
 
-use App\Models\TextMessage;
+use App\Dto\TextMessageDto;
 
 interface TextMessageClientInterface
 {
-    public function sendMessage(TextMessage $textMessage): TextMessageResponse;
+    public function sendMessage(TextMessageDto $textMessageDto): TextMessageResponse;
 }

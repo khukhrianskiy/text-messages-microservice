@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Builders\TextMessageDirector;
-use App\Factories\SendMessageFactory;
+use App\Factories\OrderDeliveredMessageDtoFactory;
 use App\Jobs\SendDeliveredTextMessage;
 use App\Repositories\TextMessageRepository;
 use App\Repositories\TextMessageRepositoryInterface;
@@ -26,18 +25,14 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(MessageBirdClient::class, function (Application $app) {
             return new MessageBirdClient(
-                $app->make(SendMessageFactory::class),
-                new Client(config('messagebird.access_key'))
+                new Client(config('messagebird.access_key')),
+                config('messagebird.channel_id')
             );
-        });
-
-        $this->app->bind(SendMessageFactory::class, function () {
-            return new SendMessageFactory(config('messagebird.channel_id'));
         });
 
         $this->app->bindMethod(SendDeliveredTextMessage::class.'@handle', function ($job, $app) {
             return $job->handle(
-                $app->make(TextMessageDirector::class),
+                $app->make(OrderDeliveredMessageDtoFactory::class),
                 $app->make(TextMessageSender::class),
                 $app->make(TextMessagePersister::class)
             );

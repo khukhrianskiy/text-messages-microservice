@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Builders\TextMessageDirector;
+use App\Factories\OrderConfirmationMessageDtoFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LatestTextMessages;
 use App\Http\Requests\SendOrderConfirmationMessage;
@@ -15,39 +15,37 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TextMessageController extends Controller
 {
-    private TextMessageDirector $textMessageDirector;
-
     private TextMessageSender $textMessageSender;
 
     private TextMessagePersister $textMessagePersister;
 
     private TextMessageRepositoryInterface $textMessageRepository;
 
+    private OrderConfirmationMessageDtoFactory $orderConfirmationMessageDtoFactory;
+
     public function __construct(
-        TextMessageDirector $textMessageDirector,
         TextMessageSender $textMessageSender,
         TextMessagePersister $textMessagePersister,
-        TextMessageRepositoryInterface $textMessageRepository
+        TextMessageRepositoryInterface $textMessageRepository,
+        OrderConfirmationMessageDtoFactory $orderConfirmationMessageDtoFactory
     ) {
-        $this->textMessageDirector   = $textMessageDirector;
-        $this->textMessageSender     = $textMessageSender;
-        $this->textMessagePersister  = $textMessagePersister;
-        $this->textMessageRepository = $textMessageRepository;
+        $this->textMessageSender                  = $textMessageSender;
+        $this->textMessagePersister               = $textMessagePersister;
+        $this->textMessageRepository              = $textMessageRepository;
+        $this->orderConfirmationMessageDtoFactory = $orderConfirmationMessageDtoFactory;
     }
 
     public function sendOrderConfirmation(SendOrderConfirmationMessage $request): Response
     {
-        $textMessage = $this->textMessageDirector->buildOrderConfirmationMessage(
-                $request->get('restaurant_name'),
-                $request->get('delivery_time'),
-                $request->get('phone_number')
-            )->get();
+        $textMessageDto = $this->orderConfirmationMessageDtoFactory->create($request->all());
 
-        $this->textMessagePersister->save($textMessage);
+        $status = $this->textMessageSender->send($textMessageDto);
 
-        $this->textMessageSender->send($textMessage);
+        $textMessageDto->setStatus($status);
 
-        SendDeliveredTextMessage::dispatch($textMessage->phone_number)
+        $this->textMessagePersister->saveFromDto($textMessageDto);
+
+        SendDeliveredTextMessage::dispatch($textMessageDto->getPhoneNumber())
             ->delay(now()->addMinutes(TextMessage::DELIVERED_MESSAGE_DELAY_MINUTES));
 
         return response()->json([], Response::HTTP_NO_CONTENT);

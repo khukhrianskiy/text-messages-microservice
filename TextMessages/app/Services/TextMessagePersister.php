@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Dto\TextMessageDto;
 use App\Models\TextMessage;
 
 class TextMessagePersister
@@ -16,5 +17,16 @@ class TextMessagePersister
         $textMessage->update([
             'status' => $status,
         ]);
+    }
+
+    public function saveFromDto(TextMessageDto $textMessageDto): void
+    {
+        $textMessage = new TextMessage([
+            'body'         => $textMessageDto->getMessage(),
+            'status'       => $textMessageDto->getStatus(),
+            'phone_number' => $textMessageDto->getPhoneNumber(),
+        ]);
+
+        $this->save($textMessage);
     }
 }

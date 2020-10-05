@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Jobs;
 
-use App\Builders\TextMessageDirector;
+use App\Dto\TextMessageDto;
+use App\Factories\OrderDeliveredMessageDtoFactory;
 use App\Jobs\SendDeliveredTextMessage;
-use App\Models\TextMessage;
 use App\Services\TextMessagePersister;
 use App\Services\TextMessageSender;
 use Tests\TestCase;
@@ -18,18 +18,13 @@ class SendDeliveredTextMessageTest extends TestCase
     {
         $phoneNumber = 'text_phone_number';
 
-        $textMessage = new TextMessage(['phone_number' => $phoneNumber]);
+        $textMessage = new TextMessageDto('message', $phoneNumber);
 
-        $textMessageDirectorMock  = $this->createMock(TextMessageDirector::class);
-        $textMessageDirectorMock
+        $orderDeliveredMessageDtoFactoryMock = $this->createMock(OrderDeliveredMessageDtoFactory::class);
+        $orderDeliveredMessageDtoFactoryMock
             ->expects(self::once())
-            ->method('buildOrderDeliveredMessage')
+            ->method('create')
             ->with($phoneNumber)
-            ->willReturnSelf();
-
-        $textMessageDirectorMock
-            ->expects(self::once())
-            ->method('get')
             ->willReturn($textMessage);
 
         $textMessageSenderMock = $this->createMock(TextMessageSender::class);
@@ -41,13 +36,13 @@ class SendDeliveredTextMessageTest extends TestCase
         $textMessagePersisterMock = $this->createMock(TextMessagePersister::class);
         $textMessagePersisterMock
             ->expects(self::once())
-            ->method('save')
+            ->method('saveFromDto')
             ->with($textMessage);
 
         $sendDeliveredTextMessageJob = new SendDeliveredTextMessage($phoneNumber);
 
         $sendDeliveredTextMessageJob->handle(
-            $textMessageDirectorMock,
+            $orderDeliveredMessageDtoFactoryMock,
             $textMessageSenderMock,
             $textMessagePersisterMock
         );

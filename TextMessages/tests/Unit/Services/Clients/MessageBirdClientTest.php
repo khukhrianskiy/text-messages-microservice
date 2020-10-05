@@ -2,14 +2,12 @@
 
 namespace Tests\Unit\Services\Clients;
 
-use App\Factories\SendMessageFactory;
-use App\Models\TextMessage;
+use App\Dto\TextMessageDto;
 use App\Services\Clients\MessageBirdClient;
 use App\Services\Clients\TextMessageResponse;
 use MessageBird\Client;
 use MessageBird\Exceptions\AuthenticateException;
 use MessageBird\Exceptions\ServerException;
-use MessageBird\Objects\Conversation\SendMessage;
 use MessageBird\Objects\Conversation\SendMessageResult;
 use MessageBird\Resources\Conversation\Send;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,15 +20,13 @@ class MessageBirdClientTest extends TestCase
      */
     public function testSendMessageWithSuccessResult(): void
     {
-        $textMessageMock = $this->createMock(TextMessage::class);
-        $sendMessageMock = $this->createMock(SendMessage::class);
+        $clientMock = $this->getClientMock();
 
-        $sendMessageFactoryMock = $this->getSendMessageFactoryMock($textMessageMock, $sendMessageMock);
-        $clientMock   = $this->getClientMock($sendMessageMock);
+        $messageBirdClient = new MessageBirdClient($clientMock, 'test');
 
-        $messageBirdClient = new MessageBirdClient($sendMessageFactoryMock, $clientMock);
+        $textMessageDtoMock = $this->createMock(TextMessageDto::class);
 
-        $textMessageResponse = $messageBirdClient->sendMessage($textMessageMock);
+        $textMessageResponse = $messageBirdClient->sendMessage($textMessageDtoMock);
 
         $this->assertEquals($textMessageResponse, new TextMessageResponse('send'));
     }
@@ -40,15 +36,13 @@ class MessageBirdClientTest extends TestCase
      */
     public function testSendMessageWithAuthenticateError(): void
     {
-        $textMessageMock = $this->createMock(TextMessage::class);
-        $sendMessageMock = $this->createMock(SendMessage::class);
+        $clientMock   = $this->getClientMock(new AuthenticateException());
 
-        $sendMessageFactoryMock = $this->getSendMessageFactoryMock($textMessageMock, $sendMessageMock);
-        $clientMock   = $this->getClientMock($sendMessageMock, new AuthenticateException());
+        $messageBirdClient = new MessageBirdClient($clientMock, 'test');
 
-        $messageBirdClient = new MessageBirdClient($sendMessageFactoryMock, $clientMock);
+        $textMessageDtoMock = $this->createMock(TextMessageDto::class);
 
-        $textMessageResponse = $messageBirdClient->sendMessage($textMessageMock);
+        $textMessageResponse = $messageBirdClient->sendMessage($textMessageDtoMock);
 
         $this->assertEquals($textMessageResponse, new TextMessageResponse('error'));
     }
@@ -58,15 +52,13 @@ class MessageBirdClientTest extends TestCase
      */
     public function testSendMessageWithMessageBirdException(): void
     {
-        $textMessageMock = $this->createMock(TextMessage::class);
-        $sendMessageMock = $this->createMock(SendMessage::class);
+        $clientMock   = $this->getClientMock(new ServerException());
 
-        $sendMessageFactoryMock = $this->getSendMessageFactoryMock($textMessageMock, $sendMessageMock);
-        $clientMock   = $this->getClientMock($sendMessageMock, new ServerException());
+        $messageBirdClient = new MessageBirdClient($clientMock, 'test');
 
-        $messageBirdClient = new MessageBirdClient($sendMessageFactoryMock, $clientMock);
+        $textMessageDtoMock = $this->createMock(TextMessageDto::class);
 
-        $textMessageResponse = $messageBirdClient->sendMessage($textMessageMock);
+        $textMessageResponse = $messageBirdClient->sendMessage($textMessageDtoMock);
 
         $this->assertEquals($textMessageResponse, new TextMessageResponse('error'));
     }
@@ -76,38 +68,21 @@ class MessageBirdClientTest extends TestCase
      */
     public function testSendMessageWithUnknownException(): void
     {
-        $textMessageMock = $this->createMock(TextMessage::class);
-        $sendMessageMock = $this->createMock(SendMessage::class);
+        $clientMock   = $this->getClientMock(new \Exception());
 
-        $sendMessageFactoryMock = $this->getSendMessageFactoryMock($textMessageMock, $sendMessageMock);
-        $clientMock   = $this->getClientMock($sendMessageMock, new \Exception());
+        $messageBirdClient = new MessageBirdClient($clientMock, 'test');
 
-        $messageBirdClient = new MessageBirdClient($sendMessageFactoryMock, $clientMock);
+        $textMessageDtoMock = $this->createMock(TextMessageDto::class);
 
-        $textMessageResponse = $messageBirdClient->sendMessage($textMessageMock);
+        $textMessageResponse = $messageBirdClient->sendMessage($textMessageDtoMock);
 
         $this->assertEquals($textMessageResponse, new TextMessageResponse('error'));
     }
 
     /**
-     * @return MockObject|SendMessageFactory
-     */
-    private function getSendMessageFactoryMock(TextMessage $textMessageMock, SendMessage $sendMessageMock): MockObject
-    {
-        $sendMessageFactoryMock = $this->createMock(SendMessageFactory::class);
-        $sendMessageFactoryMock
-            ->expects(self::once())
-            ->method('fromTextMessage')
-            ->with($textMessageMock)
-            ->willReturn($sendMessageMock);
-
-        return $sendMessageFactoryMock;
-    }
-
-    /**
      * @return MockObject|Client
      */
-    private function getClientMock(SendMessage $sendMessage, ?\Throwable $exception = null): MockObject
+    private function getClientMock(?\Throwable $exception = null): MockObject
     {
         $conversationSendMock = $this->createMock(Send::class);
 
@@ -115,13 +90,11 @@ class MessageBirdClientTest extends TestCase
             $conversationSendMock
                 ->expects(self::once())
                 ->method('send')
-                ->willThrowException($exception)
-                ->with($sendMessage);
+                ->willThrowException($exception);
         } else {
             $conversationSendMock
                 ->expects(self::once())
                 ->method('send')
-                ->with($sendMessage)
                 ->willReturn($this->getSendMessageResult());
         }
 

@@ -2,8 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Events\TextMessageStatusUpdate;
-use App\Models\TextMessage;
+use App\Dto\TextMessageDto;
 use App\Services\Clients\TextMessageClientInterface;
 use App\Services\Clients\TextMessageResponse;
 use App\Services\TextMessageSender;
@@ -22,9 +21,7 @@ class TextMessageSenderTest extends TestCase
 
         $textMessageResponse = new TextMessageResponse('accepted');
 
-        $textMessage = new TextMessage([
-            'body' => 'Test text message body'
-        ]);
+        $textMessage = new TextMessageDto('message', 'phone number');
 
         /** @var MockObject|TextMessageClientInterface $textMessageClientMock */
         $textMessageClientMock = $this->createMock(TextMessageClientInterface::class);
@@ -37,10 +34,5 @@ class TextMessageSenderTest extends TestCase
         $textMessageSender = new TextMessageSender($textMessageClientMock);
 
         $textMessageSender->send($textMessage);
-
-        Event::assertDispatched(function (TextMessageStatusUpdate $event) use ($textMessage) {
-
-            return $event->getTextMessage()->body === 'Test text message body';
-        });
     }
 }
