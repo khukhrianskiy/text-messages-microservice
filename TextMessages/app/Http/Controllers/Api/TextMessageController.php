@@ -55,7 +55,7 @@ class TextMessageController extends Controller
 
     public function latest(LatestTextMessages $request): Response
     {
-        $textMessages = $this->textMessageRepository->getLatest($request->get('limit'));
+        $textMessages = $this->textMessageRepository->getLatest($request->get('limit', 50));
 
         return response()->json($textMessages);
     }
